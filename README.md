@@ -4,7 +4,7 @@
 
 
 # About
-  MediaBox is a Docker-Compose file consiting of all the relevant componenets to setup your own Media Server.
+  MediaBox is a Docker-Compose file consiting of all the relevant components to setup your own Media Server.
 
 ## Includes
 * Plex
@@ -21,9 +21,9 @@
 * Docker
 * Docker-Compose
 
-## Instructions
-* Set Environment Variables
-  * 
+## Instructions 
 * Clone Repo to ~/docker
+* Modify .env file
+* Modify compose file.
 * Change to MediaBox directory
 * docker-compose up -d docker-compose.yml
