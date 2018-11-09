@@ -1,0 +1,207 @@
+############### Complete Media Server Apps Compose ###############
+
+version: '2'
+services:
+
+########## Frontend ##########
+
+########## Downloaders & Proxies ##########
+
+##### Deluge - Download Client with VPN
+
+ deluge:
+   container_name: deluge
+   image: binhex/arch-delugevpn
+   restart: always
+   ports:
+    - 8112:8112
+    - 8118:8118
+    - 58846:58846
+    - 58946:58946
+   cap_add:
+    - NET_ADMIN
+   privileged: true
+   environment:
+    - TZ=${TZ}
+    - PUID=${PUID}
+    - PGID=${PGID}
+    - UMASK=000
+    - VPN_ENABLED=yes
+    - VPN_PROV=custom
+    - ENABLE_PRIVOXY=yes
+    - LAN_NETWORK=
+    - DEBUG=false
+   links:
+    - plex
+    - sonarr
+    - radarr
+   volumes:
+    - $HOME/docker/deluge:/config
+    - $HOME/docker/scripts:/scripts
+    - $HOME/data/downloads:/downloads
+
+##### Cardigann - Torrent Proxy
+
+ cardigann:
+  container_name: cardigann
+  image: linuxserver/cardigann:latest
+  restart: always
+  ports:
+   - 5060:5060
+  environment:
+   - VIRTUAL_HOST=cardigann.htpc
+   - TZ=${TZ}
+   - PUID=${PUID}
+   - PGID=${PGID}
+  hostname: cardigann
+  volumes:
+   - $HOME/docker/cardigann:/config
+
+##### Sonarr - TV Management
+
+ sonarr:
+  container_name: sonarr
+  image: linuxserver/sonarr
+  restart: always
+  ports:
+   - 8989:8989
+  environment:
+   - VIRTUAL_HOST=sonarr.htpc
+   - TZ=${TZ}
+   - PGID=${PGID}
+   - PUID=${PUID}
+  hostname: sonarr
+  links:
+   - plex
+   - cardigann
+  volumes:
+   - $HOME/docker/sonarr:/config
+   - $HOME/docker/scripts:/scripts
+   - $HOME/data/media/tv:/tv
+   - $HOME/data/downloads:/downloads
+
+##### Radarr - Movie Management
+
+ radarr:
+  container_name: radarr
+  image: linuxserver/radarr
+  restart: always
+  ports:
+   - 7878:7878
+  environment:
+   - VIRTUAL_HOST=radarr.htpc
+   - TZ=${TZ}
+   - PGID=${PGID}
+   - PUID=${PUID}
+  hostname: radarr
+  links:
+   - plex
+   - cardigann
+  volumes:
+   - $HOME/docker/radarr:/config
+   - $HOME/docker/scripts:/scripts
+   - $HOME/data/media/movies:/movies
+   - $HOME/data/downloads:/downloads
+
+########## Client Facing Applications ##########
+
+
+##### Plex - Media Server
+
+ plex:
+  container_name: plex
+  image: plexinc/pms-docker:plexpass
+  restart: always
+  privileged: true
+  ports:
+   - 32400:32400/tcp
+   - 3005:3005/tcp
+   - 8324:8324/tcp
+   - 32469:32469/tcp
+   - 1900:1900/udp
+   - 32410:32410/udp
+   - 32412:32412/udp
+   - 32413:32413/udp
+   - 32414:32414/udp
+  environment:
+   - TZ=${TZ}
+   - PLEX_CLAIM=
+   - ADVERTISE_IP=
+   - VIRTUAL_HOST=plex.htpc
+  hostname: plex
+  volumes:
+   - $HOME/docker/plex:/config
+   - $HOME/data/downloads/.transcode:/transcode
+   - $HOME/data/media:/data
+   - $HOME/data/downloads/.sync:/config/Library/Application Support/Plex Media Server/Cache/Transcode
+   - /dev/dri/:/dev/dri
+
+##### Ombi - Plex Request Platform
+
+ ombi:
+  container_name: ombi
+  image: linuxserver/ombi:latest
+  restart: always
+  ports:
+   - 3579:3579
+  environment:
+   - VIRTUAL_HOST=ombi.htpc
+   - TZ=${TZ}
+   - PGID=${PGID}
+   - PUID=${PUID}
+  volumes:
+   - $HOME/docker/ombi:/config
+
+########## Monitoring ##########
+
+##### Tautulli - Plex Monitoring
+
+ tautulli:
+  container_name: tautulli
+  image: shiggins8/tautulli
+  restart: always
+  ports:
+   - 8181:8181
+  links:
+   - plex
+  environment:
+   - VIRTUAL_HOST=tautulli.htpc
+   - TZ=${TZ}
+   - PGID=${PGID}
+   - PUID=${PUID}
+  volumes:
+   - $HOME/docker/tautulli:/config
+   - $HOME/docker/plex/Library/Application Support/Plex Media Server/Logs:/logs
+
+########## Live TV & DVR ##########
+
+#TVHeadend - IPTV & DVB Frontend
+
+ tvheadend:
+  container_name: tvheadend
+  image: linuxserver/tvheadend:100
+  restart: always
+  network_mode: "host"
+  environment:
+   - TZ=${TZ}
+   - PGID=${PGID}
+   - PUID=${PUID}
+  volumes:
+   - $HOME/docker/tvheadend:/config
+   - $HOME/data/downloads/recordings:/recordings
+
+#DVR - DVR Client for Channels TV App
+
+ dvr:
+  container_name: dvr
+  image: fancybits/channels-dvr:latest 
+  restart: always
+  network_mode: host
+  ports:
+   - 8089:8089
+  devices:
+   - /dev/dri:/dev/dri
+  volumes:
+   - $HOME/docker/dvr:/config
+   - $HOME/data/downloads/recordings:/recordings
+
