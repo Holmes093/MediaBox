@@ -1,6 +1,6 @@
 # MediaBox
 
-![Image of MediaBox](MediaBox.jpg)
+![Image of MediaBox](MediaBox.png)
 
 
 # About
