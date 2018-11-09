@@ -20,3 +20,10 @@
 ## Requirements
 * Docker
 * Docker-Compose
+
+## Instructions
+* Set Environment Variables
+  * 
+* Clone Repo to ~/docker
+* Change to MediaBox directory
+* docker-compose up -d docker-compose.yml
