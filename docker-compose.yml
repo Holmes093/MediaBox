@@ -1,6 +1,6 @@
 ############### Complete Media Server Apps Compose ###############
 
-version: '2'
+version: '3.7'
 services:
 
 ########## Frontend ##########
@@ -42,7 +42,7 @@ services:
     - VPN_ENABLED=yes
     - VPN_PROV=custom
     - ENABLE_PRIVOXY=yes
-    - LAN_NETWORK=
+    - LAN_NETWORK=10.0.0.0/24
     - DEBUG=false
    links:
     - plex
@@ -74,7 +74,7 @@ services:
 
  sonarr:
   container_name: sonarr
-  image: linuxserver/sonarr
+  image: holmes093/sonarr
   restart: always
   ports:
    - 8989:8989
@@ -97,7 +97,7 @@ services:
 
  radarr:
   container_name: radarr
-  image: linuxserver/radarr
+  image: holmes093/radarr
   restart: always
   ports:
    - 7878:7878
@@ -138,8 +138,8 @@ services:
    - 32414:32414/udp
   environment:
    - TZ=${TZ}
-   - PLEX_CLAIM=
-   - ADVERTISE_IP=
+   - PLEX_CLAIM= claim-4QSvmDsfjD7bioHbkxXs
+   - ADVERTISE_IP=http://10.0.0.20:32400/
    - VIRTUAL_HOST=plex.htpc
   hostname: plex
   volumes:
