@@ -18,6 +18,52 @@ services:
     - /var/run/docker.sock:/var/run/docker.sock
     - $HOME/docker/portainer:/config
 
+########## Monitoring ##########
+
+##### Varken - CLI Data Aggregation
+
+ varken:
+   container_name: varken
+   image: boerderij/varken
+   restart: always
+   environment:
+    - TZ=${TZ}
+    - PUID=${PUID}
+    - PGID=${PGID}
+   volumes:
+    - $HOME/docker/varken:/config 
+   
+##### Grafana - 
+
+ grafana:
+   container_name: grafana
+   image: grafana/grafana
+   restart: always
+   ports:
+    - 3000:3000
+   environment:
+    - TZ=${TZ}
+    - PUID=${PUID}
+    - PGID=${PGID}
+   volumes:
+    - $HOME/docker/grafana:/conf
+
+##### InfluxDB - 
+
+ influxdb:
+   container_name: influxdb
+   image: influxdb
+   restart: always
+   ports:
+    - 8086:8086
+    - 8083:8083
+   environment:
+    - TZ=${TZ}
+    - PUID=${PUID}
+    - PGID=${PGID}
+   volumes:
+    - $HOME/docker/influxdb:/var/lib/influxdb
+
 ########## Downloaders & Proxies ##########
 
 ##### Deluge - Download Client with VPN
@@ -42,7 +88,7 @@ services:
     - VPN_ENABLED=yes
     - VPN_PROV=custom
     - ENABLE_PRIVOXY=yes
-    - LAN_NETWORK=10.0.0.0/24
+    - LAN_NETWORK=    ## Local Area Network e.g. 192.168.0.0/24
     - DEBUG=false
    links:
     - plex
@@ -138,8 +184,8 @@ services:
    - 32414:32414/udp
   environment:
    - TZ=${TZ}
-   - PLEX_CLAIM= claim-4QSvmDsfjD7bioHbkxXs
-   - ADVERTISE_IP=http://10.0.0.20:32400/
+   - PLEX_CLAIM=  ## https://www.plex.tv/claim
+   - ADVERTISE_IP= ## IP:PORT e.g. http://192.168.0.1:32400
    - VIRTUAL_HOST=plex.htpc
   hostname: plex
   volumes:
