@@ -7,6 +7,8 @@
   MediaBox is a Docker-Compose file consiting of all the relevant components to setup your own Media Server.
 
 ## Includes
+* NGINX
+* Portainer
 * Plex
 * Sonarr
 * Radarr
@@ -15,7 +17,6 @@
 * Tautulli
 * Cardigann
 * TV Headend
-* Channels DVR
 
 ## Requirements
 * Docker
