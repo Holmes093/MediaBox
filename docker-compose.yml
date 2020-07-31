@@ -480,7 +480,7 @@ services:
     - "traefik.http.routers.sstv-rtr.tls=true"
     ## Middlewares
     - "traefik.http.routers.sstv-rtr.middlewares=chain-no-auth@file, testIPwhitelist"
-    - "traefik.http.middlewares.testIPwhitelist.ipwhitelist.sourcerange=127.0.0.1/32, 146.199.7.0/25, 77.99.135.0/24"
+    - "traefik.http.middlewares.testIPwhitelist.ipwhitelist.sourcerange=$EXTERNAL_IPS
     ## HTTP Services
     - "traefik.http.routers.sstv-rtr.service=sstv"
     - "traefik.http.services.sstv.loadbalancer.server.port=8098"
